@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MittsUIs - Premium UI Kits for designers and developers. Buy verified UI components with secure Telegram payments.">
+    <meta name="keywords" content="UI kits, design resources, Telegram payments, web components, dashboard templates">
+    <meta name="author" content="MittsUIs">
+    <meta property="og:title" content="MittsUIs | Premium UI Kits">
+    <meta property="og:description" content="Buy verified UI components with secure Telegram payments">
+    <meta property="og:url" content="https://mittsuis.com">
+    <meta property="og:type" content="website">
+    <title>MittsUIs | Premium UI Kits</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Theme Toggle -->
+    <div class="theme-toggle">
+        <span class="material-icons light-icon">light_mode</span>
+        <span class="material-icons dark-icon">dark_mode</span>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Header Section -->
+    <header class="header">
+        <div class="logo-container">
+            <div class="logo-banner">
+                <h1>MittsUIs</h1>
+                <div class="banner-messages">
+                    <div class="message active">Buy Premium UI Kits</div>
+                    <div class="message">Secure Payments via Telegram or Grey</div>
+                    <div class="message">Get Verified, Start Fast</div>
+                </div>
+            </div>
+        </div>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="#" class="nav-link" data-page="home">Home</a></li>
+                <li><a href="#" class="nav-link" data-page="dashboard">Dashboard</a></li>
+                <li><a href="#" class="nav-link" data-page="profile">Profile</a></li>
+                <li><a href="#" class="nav-link" data-page="admin" id="admin-link" style="display:none;">Admin</a></li>
+            </ul>
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search UIs...">
+                <span class="material-icons search-icon">search</span>
+            </div>
+            <div class="auth-container">
+                <button id="auth-button" class="auth-btn">
+                    <span class="material-icons">account_circle</span>
+                    <span>Login</span>
+                </button>
+            </div>
+            <div class="cart-icon-container">
+                <span class="material-icons cart-icon">shopping_cart</span>
+                <span class="cart-count">0</span>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Area - Pages will be loaded here dynamically -->
+    <main class="main-content">
+        <!-- Home Page (Default) -->
+        <section id="home-page" class="page active-page">
+            <div class="categories-tabs">
+                <!-- Categories will be loaded dynamically from JS -->
+            </div>
+            <div class="ui-grid-container">
+                <!-- UI Cards will be loaded dynamically from JS -->
+            </div>
+        </section>
+
+        <!-- UI Detail Page -->
+        <section id="detail-page" class="page">
+            <div class="detail-container">
+                <!-- UI Details will be loaded dynamically from JS -->
+            </div>
+        </section>
+
+        <!-- Dashboard Page -->
+        <section id="dashboard-page" class="page">
+            <div class="dashboard-tabs">
+                <button class="tab-btn active" data-tab="purchased">Purchased UIs</button>
+                <button class="tab-btn" data-tab="bookmarks">Bookmarks</button>
+                <button class="tab-btn" data-tab="payments">Payment Status</button>
+                <button class="tab-btn" data-tab="telegram">Telegram Binding</button>
+            </div>
+            <div class="dashboard-content">
+                <div id="purchased-tab" class="tab-content active">
+                    <h2>Your Purchased UIs</h2>
+                    <div class="purchased-items">
+                        <!-- Purchased items will be loaded dynamically -->
+                    </div>
+                </div>
+                <div id="bookmarks-tab" class="tab-content">
+                    <h2>Your Bookmarks</h2>
+                    <div class="bookmarked-items">
+                        <!-- Bookmarked items will be loaded dynamically -->
+                    </div>
+                </div>
+                <div id="payments-tab" class="tab-content">
+                    <h2>Payment Status</h2>
+                    <div class="payment-status">
+                        <!-- Payment status will be loaded dynamically -->
+                    </div>
+                </div>
+                <div id="telegram-tab" class="tab-content">
+                    <h2>Telegram Username</h2>
+                    <div class="telegram-form">
+                        <input type="text" id="telegram-username" placeholder="Your Telegram username (e.g., @username)">
+                        <button id="save-telegram">Save</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Profile Page -->
+        <section id="profile-page" class="page">
+            <div class="profile-container">
+                <h2>Your Profile</h2>
+                <div class="profile-info">
+                    <div class="profile-field">
+                        <label>Name:</label>
+                        <span id="profile-name"></span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Email:</label>
+                        <span id="profile-email"></span>
+                    </div>
+                    <div class="profile-field">
+                        <label>User ID:</label>
+                        <span id="profile-uid"></span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Telegram:</label>
+                        <span id="profile-telegram"></span>
+                    </div>
+                    <div class="profile-field">
+                        <label>Verified:</label>
+                        <span id="profile-verified"></span>
+                    </div>
+                </div>
+                <button id="logout-btn" class="logout-btn">Logout</button>
+            </div>
+        </section>
+
+        <!-- Admin Page -->
+        <section id="admin-page" class="page">
+            <div class="admin-tabs">
+                <button class="tab-btn active" data-tab="verify-ui">Verify UIs</button>
+                <button class="tab-btn" data-tab="verify-user">Verify Users</button>
+                <button class="tab-btn" data-tab="upload-ui">Upload UI</button>
+            </div>
+            <div class="admin-content">
+                <div id="verify-ui-tab" class="tab-content active">
+                    <h2>UI Verification</h2>
+                    <div class="unverified-uis">
+                        <!-- Unverified UIs will be loaded dynamically -->
+                    </div>
+                </div>
+                <div id="verify-user-tab" class="tab-content">
+                    <h2>User Verification</h2>
+                    <div class="unverified-users">
+                        <!-- Unverified users will be loaded dynamically -->
+                    </div>
+                </div>
+                <div id="upload-ui-tab" class="tab-content">
+                    <h2>Upload New UI</h2>
+                    <form id="upload-ui-form" class="upload-form">
+                        <div class="form-group">
+                            <label for="ui-title">Title</label>
+                            <input type="text" id="ui-title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="ui-desc">Description</label>
+                            <textarea id="ui-desc" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="ui-image">Image URL</label>
+                            <input type="text" id="ui-image" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="ui-category">Category</label>
+                            <select id="ui-category" required>
+                                <!-- Categories will be loaded dynamically -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="ui-notes">Notes</label>
+                            <textarea id="ui-notes"></textarea>
+                        </div>
+                        <div class="price-fields">
+                            <div class="form-group">
+                                <label for="ui-price-ghc">Price (GHC)</label>
+                                <input type="number" id="ui-price-ghc" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="ui-price-usd">Price (USD)</label>
+                                <input type="number" id="ui-price-usd" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="ui-price-usdt">Price (USDT)</label>
+                                <input type="number" id="ui-price-usdt" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="ui-price-eth">Price (ETH)</label>
+                                <input type="number" id="ui-price-eth" step="0.00001" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="ui-price-bnb">Price (BNB)</label>
+                                <input type="number" id="ui-price-bnb" step="0.00001" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="upload-btn">Upload UI</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal System -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal-container" id="modal-container">
+            <!-- Modal content will be injected here dynamically -->
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <h3>MittsUIs</h3>
+                <p>Premium UI Kits for Designers & Developers</p>
+            </div>
+            <div class="footer-links">
+                <h4>Quick Links</h4>
+                <ul>
+                    <li><a href="#" class="nav-link" data-page="home">Home</a></li>
+                    <li><a href="#" class="nav-link" data-page="dashboard">Dashboard</a></li>
+                    <li><a href="#" class="nav-link" data-page="profile">Profile</a></li>
+                </ul>
+            </div>
+            <div class="footer-social">
+                <h4>Connect With Us</h4>
+                <div class="social-icons">
+                    <a href="https://t.me/MittelyPay" target="_blank" class="social-icon">
+                        <span class="material-icons">telegram</span>
+                        <span>Telegram</span>
+                    </a>
+                    <a href="#" target="_blank" class="social-icon">
+                        <span class="material-icons">code</span>
+                        <span>GitHub</span>
+                    </a>
+                    <a href="#" target="_blank" class="social-icon">
+                        <span class="material-icons">forum</span>
+                        <span>Reddit</span>
+                    </a>
+                    <a href="#" target="_blank" class="social-icon">
+                        <span class="material-icons">alternate_email</span>
+                        <span>X (Twitter)</span>
+                    </a>
+                    <a href="mailto:contact@mittsuis.com" class="social-icon">
+                        <span class="material-icons">email</span>
+                        <span>Email</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 MittsUIs. All rights reserved.</p>
+            <p>Domain: <a href="https://mittsuis.com" target="_blank">mittsuis.com</a></p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="mock-data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
