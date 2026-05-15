@@ -3,365 +3,486 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#0b0f19" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)">
-  <meta name="description" content="MITTELY Admin Panel - Manage your digital assets marketplace">
-  <meta name="keywords" content="admin, dashboard, products, orders, customers, digital assets, templates, UI kits">
-  <meta name="author" content="MITTELY">
-  <meta name="robots" content="noindex, nofollow">
-  <meta name="googlebot" content="noindex">
+  <meta name="theme-color" content="#0b0f19">
   <meta name="heleket" content="3bebdecb" />
-  
-  <!-- Open Graph / Social Media -->
-  <meta property="og:title" content="MITTELY Admin Panel">
-  <meta property="og:description" content="Manage your digital assets marketplace">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="MITTELY">
-  
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="MITTELY Admin Panel">
-  <meta name="twitter:description" content="Manage your digital assets marketplace">
-  
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" sizes="32x32" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
-  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎨</text></svg>">
-  <link rel="manifest" href="data:application/manifest+json,{\"name\":\"MITTELY\",\"short_name\":\"MITTELY\",\"start_url\":\"/\",\"display\":\"standalone\",\"theme_color\":\"#6366f1\",\"background_color\":\"#0b0f19\"}">
-  
   <title>Admin Panel — MITTELY</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
   <style>
-    /* Additional Admin Styles */
-    .product-form-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
+    /* Admin Dashboard Styles */
+    .admin-container {
+      display: flex;
+      min-height: 100vh;
+    }
+    .admin-sidebar {
+      width: 280px;
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    .admin-main {
+      flex: 1;
+      margin-left: 280px;
+      padding: 2rem;
+    }
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
       gap: 1rem;
     }
-    .discount-code {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
-      padding: 0.25rem 0.75rem;
-      border-radius: 999px;
-      font-family: monospace;
+    .admin-header h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+    }
+    .stat-card .value {
+      font-size: 2rem;
+      font-weight: 800;
+    }
+    .stat-card .label {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+    }
+    .product-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .product-card .product-image {
+      height: 200px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+    .product-card .product-badges {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+    .product-card .product-info {
+      padding: 1.5rem;
+    }
+    .product-card .product-title {
+      font-size: 1.1rem;
       font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .product-card .product-price {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin: 0.5rem 0;
+    }
+    .product-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #ec4899);
+      color: white;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+    .btn-sm {
+      padding: 0.4rem 0.8rem;
       font-size: 0.8rem;
     }
-    .upload-area {
-      border: 2px dashed var(--border);
-      border-radius: var(--radius-sm);
-      padding: 2rem;
-      text-align: center;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-    .upload-area:hover {
-      border-color: var(--primary);
-      background: rgba(99,102,241,0.05);
-    }
-    .upload-area.drag-over {
-      border-color: var(--primary);
-      background: rgba(99,102,241,0.1);
-    }
-    .product-badge {
-      display: inline-flex;
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.8);
+      display: none;
       align-items: center;
-      gap: 0.25rem;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal.active {
+      display: flex;
+    }
+    .modal-content {
+      background: var(--bg-card);
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-content h2 {
+      margin-bottom: 1.5rem;
+    }
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .badge {
+      display: inline-block;
       padding: 0.25rem 0.5rem;
       border-radius: 999px;
       font-size: 0.7rem;
       font-weight: 600;
     }
-    .badge-featured {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
+    .badge-success { background: #10b98120; color: #10b981; }
+    .badge-warning { background: #f59e0b20; color: #f59e0b; }
+    .badge-danger { background: #ef444420; color: #ef4444; }
+    .badge-info { background: #6366f120; color: #6366f1; }
+    .discount-code {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-family: monospace;
+      font-weight: bold;
     }
-    .badge-discount {
-      background: #f59e0b;
-      color: white;
-    }
-    .discounts-list {
-      max-height: 300px;
-      overflow-y: auto;
-    }
-    .discount-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.75rem;
-      background: var(--bg-hover);
-      border-radius: var(--radius-sm);
-      margin-bottom: 0.5rem;
-    }
-    .stats-small {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 1rem;
-      margin-bottom: 2rem;
-    }
-    .stat-mini {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      padding: 1rem;
+    .upload-area {
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      padding: 2rem;
       text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
     }
-    .stat-mini-value {
-      font-size: 1.5rem;
-      font-weight: 800;
+    .upload-area:hover {
+      border-color: var(--primary);
+      background: rgba(99,102,241,0.05);
+    }
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 0.5rem 1rem;
+      background: transparent;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      border-radius: 8px;
+    }
+    .tab-btn.active {
+      background: rgba(99,102,241,0.1);
+      color: var(--primary);
+    }
+    .tab-pane {
+      display: none;
+    }
+    .tab-pane.active {
+      display: block;
     }
     @media (max-width: 768px) {
-      .product-form-grid {
-        grid-template-columns: 1fr;
+      .admin-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s;
       }
-      .stats-small {
-        grid-template-columns: repeat(2, 1fr);
+      .admin-sidebar.open {
+        transform: translateX(0);
+      }
+      .admin-main {
+        margin-left: 0;
+      }
+      .mobile-toggle {
+        display: block;
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        z-index: 100;
       }
     }
   </style>
 </head>
 <body>
 
-<!-- Theme Switcher Button -->
-<button class="theme-switcher" id="themeSwitcher" aria-label="Toggle theme">
-  <i class="fas fa-sun"></i>
-  <i class="fas fa-moon" style="display: none;"></i>
+<button class="mobile-toggle" id="mobileToggle" style="display: none; position: fixed; top: 1rem; left: 1rem; z-index: 100; background: var(--bg-card); border: none; padding: 0.5rem; border-radius: 8px; cursor: pointer;">
+  <i class="fas fa-bars"></i>
 </button>
 
-<div class="toast-container" id="toastContainer"></div>
-
-<!-- Admin Access Verification -->
-<div class="admin-verify-overlay" id="adminVerifyOverlay">
-  <div class="admin-verify-modal">
-    <h2>🔐 Admin Access</h2>
-    <p>Enter verification code to access admin panel</p>
-    <input type="password" id="adminVerifyCode" placeholder="Enter code" class="form-input">
-    <button class="btn btn-primary" onclick="verifyAdminAccess()">Verify</button>
-  </div>
-</div>
-
-<div class="admin-layout" id="adminLayout" style="display: none;">
+<div class="admin-container">
   <!-- Sidebar -->
-  <aside class="admin-sidebar">
-    <a href="index.html" class="logo">MITTELY<span>.</span></a>
-    <nav>
-      <ul class="admin-nav">
-        <li><a href="#" data-tab="dashboard" class="active"><i class="fas fa-chart-line"></i> Dashboard</a></li>
-        <li><a href="#" data-tab="products"><i class="fas fa-box"></i> Products</a></li>
-        <li><a href="#" data-tab="discounts"><i class="fas fa-tag"></i> Discount Codes</a></li>
-        <li><a href="#" data-tab="orders"><i class="fas fa-shopping-cart"></i> Orders</a></li>
-        <li><a href="#" data-tab="customers"><i class="fas fa-users"></i> Customers</a></li>
-        <li><a href="#" data-tab="analytics"><i class="fas fa-chart-bar"></i> Analytics</a></li>
-        <li><a href="#" data-tab="settings"><i class="fas fa-cog"></i> Settings</a></li>
-      </ul>
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div style="padding: 1.5rem;">
+      <a href="index.html" class="logo" style="font-size: 1.5rem; font-weight: 900; text-decoration: none;">MITTELY<span style="color: #6366f1;">.</span></a>
+    </div>
+    <nav style="padding: 0 1rem;">
+      <div class="sidebar-nav">
+        <a href="#" onclick="showTab('dashboard')" class="tab-btn active" style="display: flex; align-items: center; gap: 0.75rem; width: 100%; margin-bottom: 0.5rem;">
+          <i class="fas fa-chart-line"></i> Dashboard
+        </a>
+        <a href="#" onclick="showTab('products')" class="tab-btn" style="display: flex; align-items: center; gap: 0.75rem; width: 100%; margin-bottom: 0.5rem;">
+          <i class="fas fa-box"></i> Products
+        </a>
+        <a href="#" onclick="showTab('discounts')" class="tab-btn" style="display: flex; align-items: center; gap: 0.75rem; width: 100%; margin-bottom: 0.5rem;">
+          <i class="fas fa-tag"></i> Discount Codes
+        </a>
+        <a href="#" onclick="showTab('orders')" class="tab-btn" style="display: flex; align-items: center; gap: 0.75rem; width: 100%; margin-bottom: 0.5rem;">
+          <i class="fas fa-shopping-cart"></i> Orders
+        </a>
+        <a href="#" onclick="showTab('customers')" class="tab-btn" style="display: flex; align-items: center; gap: 0.75rem; width: 100%; margin-bottom: 0.5rem;">
+          <i class="fas fa-users"></i> Customers
+        </a>
+        <a href="#" onclick="showTab('analytics')" class="tab-btn" style="display: flex; align-items: center; gap: 0.75rem; width: 100%; margin-bottom: 0.5rem;">
+          <i class="fas fa-chart-bar"></i> Analytics
+        </a>
+        <a href="#" onclick="showTab('settings')" class="tab-btn" style="display: flex; align-items: center; gap: 0.75rem; width: 100%;">
+          <i class="fas fa-cog"></i> Settings
+        </a>
+      </div>
     </nav>
-    <div class="admin-sidebar-footer">
-      <div class="admin-user">
-        <img id="adminAvatar" src="" alt="">
+    <div style="padding: 1.5rem; border-top: 1px solid var(--border); margin-top: auto; position: absolute; bottom: 0; width: 100%;">
+      <div id="adminUserInfo" style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+        <img id="adminAvatar" src="" style="width: 40px; height: 40px; border-radius: 50%;">
         <div>
-          <div id="adminName"></div>
-          <div id="adminEmail"></div>
+          <div id="adminName" style="font-weight: 600;"></div>
+          <div id="adminEmail" style="font-size: 0.75rem; color: var(--text-muted);"></div>
         </div>
       </div>
-      <button class="btn btn-outline btn-sm btn-block" onclick="logout()">
-        <i class="fas fa-sign-out-alt"></i> Sign Out
-      </button>
+      <button class="btn btn-outline" style="width: 100%;" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
     </div>
   </aside>
 
   <!-- Main Content -->
   <main class="admin-main">
     <!-- Dashboard Tab -->
-    <div id="tab-dashboard" class="admin-tab active">
+    <div id="dashboardTab" class="tab-pane active">
       <div class="admin-header">
         <h1>Dashboard</h1>
-        <div class="header-stats">
-          <span class="text-dim">Last updated: <span id="lastUpdated">Just now</span></span>
-        </div>
+        <span id="dashboardTime" style="color: var(--text-muted);"></span>
       </div>
-      
-      <div class="stats-row">
-        <div class="stat-card"><div class="stat-value" id="dashOrders">0</div><div class="stat-label">Total Orders</div></div>
-        <div class="stat-card"><div class="stat-value" id="dashRevenue">$0</div><div class="stat-label">Revenue</div></div>
-        <div class="stat-card"><div class="stat-value" id="dashCustomers">0</div><div class="stat-label">Customers</div></div>
-        <div class="stat-card"><div class="stat-value" id="dashProducts">0</div><div class="stat-label">Products</div></div>
+      <div class="stats-grid" id="dashboardStats">
+        <div class="stat-card"><div class="value" id="totalProducts">0</div><div class="label">Total Products</div></div>
+        <div class="stat-card"><div class="value" id="totalSales">0</div><div class="label">Total Sales</div></div>
+        <div class="stat-card"><div class="value" id="totalRevenue">$0</div><div class="label">Revenue</div></div>
+        <div class="stat-card"><div class="value" id="totalCustomers">0</div><div class="label">Customers</div></div>
+        <div class="stat-card"><div class="value" id="totalDownloads">0</div><div class="label">Downloads</div></div>
+        <div class="stat-card"><div class="value" id="activeDiscounts">0</div><div class="label">Active Discounts</div></div>
       </div>
-      
-      <div class="stats-small">
-        <div class="stat-mini"><div class="stat-mini-value" id="dashDownloads">0</div><div class="stat-label">Total Downloads</div></div>
-        <div class="stat-mini"><div class="stat-mini-value" id="dashActiveDiscounts">0</div><div class="stat-label">Active Discounts</div></div>
-        <div class="stat-mini"><div class="stat-mini-value" id="dashConversionRate">0%</div><div class="stat-label">Conversion Rate</div></div>
-        <div class="stat-mini"><div class="stat-mini-value" id="dashAvgOrder">$0</div><div class="stat-label">Avg Order Value</div></div>
+      <div class="admin-header" style="margin-top: 2rem;">
+        <h2>Recent Orders</h2>
       </div>
-      
-      <div class="admin-card"><div class="card-header"><h3>Recent Orders</h3></div><div class="card-body"><div id="recentOrdersTable"></div></div></div>
+      <div id="recentOrdersList"></div>
     </div>
 
     <!-- Products Tab -->
-    <div id="tab-products" class="admin-tab hidden">
+    <div id="productsTab" class="tab-pane">
       <div class="admin-header">
         <h1>Products</h1>
-        <button class="btn btn-primary" onclick="openProductModal()">
-          <i class="fas fa-plus"></i> Add Product
-        </button>
+        <button class="btn btn-primary" onclick="openProductModal()"><i class="fas fa-plus"></i> Add Product</button>
       </div>
-      <div class="toolbar">
-        <div class="search-box"><i class="fas fa-search"></i><input type="text" placeholder="Search products..." id="productSearch" oninput="filterProducts()"></div>
-        <div class="filter-buttons">
-          <button class="btn btn-outline btn-sm" onclick="filterByCategory('all')">All</button>
-          <button class="btn btn-outline btn-sm" onclick="filterByCategory('UI Kit')">UI Kits</button>
-          <button class="btn btn-outline btn-sm" onclick="filterByCategory('Template')">Templates</button>
-          <button class="btn btn-outline btn-sm" onclick="filterByCategory('Icon Pack')">Icon Packs</button>
-          <button class="btn btn-outline btn-sm" onclick="filterByCategory('Illustration')">Illustrations</button>
-        </div>
+      <div style="margin-bottom: 1rem;">
+        <input type="text" id="productSearch" placeholder="Search products..." style="width: 100%; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text);" onkeyup="filterProducts()">
       </div>
-      <div id="productsTableContainer"></div>
+      <div id="productsList" class="products-grid"></div>
     </div>
 
-    <!-- Discount Codes Tab -->
-    <div id="tab-discounts" class="admin-tab hidden">
+    <!-- Discounts Tab -->
+    <div id="discountsTab" class="tab-pane">
       <div class="admin-header">
         <h1>Discount Codes</h1>
-        <button class="btn btn-primary" onclick="openDiscountModal()">
-          <i class="fas fa-plus"></i> Create Discount Code
-        </button>
+        <button class="btn btn-primary" onclick="openDiscountModal()"><i class="fas fa-plus"></i> Create Discount</button>
       </div>
-      <div class="admin-card">
-        <div class="card-header"><h3>Active Discount Codes</h3></div>
-        <div class="card-body">
-          <div id="discountsList" class="discounts-list"></div>
-        </div>
-      </div>
+      <div id="discountsList"></div>
     </div>
 
     <!-- Orders Tab -->
-    <div id="tab-orders" class="admin-tab hidden">
-      <div class="admin-header"><h1>Orders</h1></div>
-      <div class="toolbar">
-        <div class="search-box"><i class="fas fa-search"></i><input type="text" placeholder="Search orders..." id="orderSearch" oninput="filterOrders()"></div>
-        <select id="orderStatusFilter" onchange="filterOrders()" class="form-input" style="width: auto;">
-          <option value="all">All Status</option>
-          <option value="completed">Completed</option>
-          <option value="pending">Pending</option>
-          <option value="failed">Failed</option>
-        </select>
+    <div id="ordersTab" class="tab-pane">
+      <div class="admin-header">
+        <h1>Orders</h1>
       </div>
-      <div id="ordersTableContainer"></div>
+      <div id="ordersList"></div>
     </div>
 
     <!-- Customers Tab -->
-    <div id="tab-customers" class="admin-tab hidden">
-      <div class="admin-header"><h1>Customers</h1></div>
-      <div class="toolbar">
-        <div class="search-box"><i class="fas fa-search"></i><input type="text" placeholder="Search customers..." id="customerSearch" oninput="filterCustomers()"></div>
+    <div id="customersTab" class="tab-pane">
+      <div class="admin-header">
+        <h1>Customers</h1>
       </div>
-      <div id="customersTableContainer"></div>
+      <div id="customersList"></div>
     </div>
 
     <!-- Analytics Tab -->
-    <div id="tab-analytics" class="admin-tab hidden">
-      <div class="admin-header"><h1>Analytics</h1></div>
-      <div class="stats-row">
-        <div class="stat-card"><div class="stat-value" id="analyticsViews">0</div><div class="stat-label">Total Page Views</div></div>
-        <div class="stat-card"><div class="stat-value" id="analyticsUnique">0</div><div class="stat-label">Unique Visitors</div></div>
-        <div class="stat-card"><div class="stat-value" id="analyticsSales">0</div><div class="stat-label">Total Sales</div></div>
-        <div class="stat-card"><div class="stat-value" id="analyticsRevenue">$0</div><div class="stat-label">Revenue</div></div>
+    <div id="analyticsTab" class="tab-pane">
+      <div class="admin-header">
+        <h1>Analytics</h1>
       </div>
-      <div class="admin-card">
-        <div class="card-header"><h3>Top Selling Products</h3></div>
-        <div class="card-body"><div id="topProducts"></div></div>
+      <div class="stats-grid" id="analyticsStats"></div>
+      <div class="admin-header" style="margin-top: 2rem;">
+        <h2>Top Selling Products</h2>
       </div>
+      <div id="topProductsList"></div>
     </div>
 
     <!-- Settings Tab -->
-    <div id="tab-settings" class="admin-tab hidden">
-      <div class="admin-header"><h1>Settings</h1></div>
-      <div class="admin-card" style="max-width: 600px;">
-        <div class="card-body">
-          <div class="form-group"><label>Site Name</label><input type="text" id="settingSiteName" value="MITTELY"></div>
-          <div class="form-group"><label>Tagline</label><input type="text" id="settingTagline" value="Building Digital Experiences That Matter"></div>
-          <div class="form-group"><label>Currency</label><select id="settingCurrency"><option value="USD">USD ($)</option><option value="EUR">EUR (€)</option><option value="GBP">GBP (£)</option></select></div>
-          <div class="form-group"><label>Meta Keywords (SEO)</label><input type="text" id="settingKeywords" value="UI kits, templates, digital assets, web design, development"></div>
-          <div class="form-group"><label>Meta Description (SEO)</label><textarea id="settingDescription" rows="2">Premium digital assets marketplace for creators</textarea></div>
-          <div class="form-group"><label>Default Discount Percentage</label><input type="number" id="defaultDiscount" value="10" min="0" max="100"></div>
-          <button class="btn btn-primary" onclick="saveSettings()"><i class="fas fa-save"></i> Save Settings</button>
-        </div>
+    <div id="settingsTab" class="tab-pane">
+      <div class="admin-header">
+        <h1>Settings</h1>
+      </div>
+      <div style="max-width: 600px;">
+        <div class="form-group"><label>Site Name</label><input type="text" id="siteName" value="MITTELY"></div>
+        <div class="form-group"><label>Tagline</label><input type="text" id="tagline" value="Building Digital Experiences That Matter"></div>
+        <div class="form-group"><label>Meta Keywords (SEO)</label><input type="text" id="metaKeywords" value="UI kits, templates, digital assets, web design"></div>
+        <div class="form-group"><label>Meta Description</label><textarea id="metaDescription" rows="2">Premium digital assets marketplace for creators</textarea></div>
+        <div class="form-group"><label>Default Discount Percentage</label><input type="number" id="defaultDiscount" value="10"></div>
+        <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
       </div>
     </div>
   </main>
 </div>
 
 <!-- Product Modal -->
-<div class="modal-overlay" id="productModal">
-  <div class="modal" style="max-width: 700px;">
-    <button class="modal-close" onclick="closeModal('productModal')"><i class="fas fa-times"></i></button>
+<div id="productModal" class="modal">
+  <div class="modal-content">
     <h2 id="productModalTitle">Add Product</h2>
     <form id="productForm" onsubmit="saveProduct(event)">
       <input type="hidden" id="productId">
-      
-      <div class="product-form-grid">
-        <div class="form-group"><label>Product Name *</label><input type="text" id="productName" required></div>
-        <div class="form-group"><label>Slug (URL) *</label><input type="text" id="productSlug" required placeholder="e.g., saas-launch-pro"></div>
-        <div class="form-group"><label>Price (USD) *</label><input type="number" id="productPrice" min="0" step="0.01" required></div>
-        <div class="form-group"><label>Category *</label><select id="productCategory" required>
-          <option value="UI Kit">UI Kit</option><option value="Template">Template</option>
-          <option value="Icon Pack">Icon Pack</option><option value="Illustration">Illustration</option>
-        </select></div>
+      <div class="form-group"><label>Product Name *</label><input type="text" id="productName" required></div>
+      <div class="form-group"><label>Slug (URL) *</label><input type="text" id="productSlug" required placeholder="e.g., premium-ui-kit"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Price ($) *</label><input type="number" id="productPrice" step="0.01" required></div>
+        <div class="form-group"><label>Category *</label>
+          <select id="productCategory" required>
+            <option value="UI Kit">UI Kit</option><option value="Template">Template</option>
+            <option value="Icon Pack">Icon Pack</option><option value="Illustration">Illustration</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
         <div class="form-group"><label>Code/Language</label><input type="text" id="productLanguage" placeholder="HTML, CSS, JS, React"></div>
         <div class="form-group"><label>File Size</label><input type="text" id="productFileSize" placeholder="e.g., 2.5 MB"></div>
       </div>
-      
-      <div class="form-group"><label>Description *</label><textarea id="productDesc" rows="3" required></textarea></div>
-      <div class="form-group"><label>Image URL *</label><input type="url" id="productImage" placeholder="https://images.unsplash.com/..." required></div>
+      <div class="form-group"><label>Description *</label><textarea id="productDescription" rows="3" required></textarea></div>
+      <div class="form-group"><label>Image URL *</label><input type="url" id="productImage" placeholder="https://images.unsplash.com/..."></div>
       <div class="form-group"><label>Live Preview URL</label><input type="url" id="productLiveUrl" placeholder="https://example.com/preview"></div>
-      
-      <div class="product-form-grid">
-        <div class="form-group"><label>ZIP File URL</label><input type="url" id="productZipUrl" placeholder="https://example.com/file.zip"></div>
-        <div class="form-group"><label>ZIP File Size</label><input type="text" id="productZipSize" placeholder="e.g., 5 MB"></div>
+      <div class="form-group"><label>ZIP File URL</label><input type="url" id="productZipUrl" placeholder="https://example.com/file.zip"></div>
+      <div class="upload-area" onclick="document.getElementById('zipUpload').click()">
+        <i class="fas fa-cloud-upload-alt"></i> Click or drag ZIP file
+        <input type="file" id="zipUpload" accept=".zip" style="display: none;" onchange="handleZipUpload(this)">
       </div>
-      
-      <div class="upload-area" id="uploadArea" onclick="document.getElementById('zipFileInput').click()">
-        <i class="fas fa-cloud-upload-alt" style="font-size: 2rem;"></i>
-        <p>Click or drag ZIP file here to upload</p>
-        <small>Maximum file size: 50MB</small>
-        <input type="file" id="zipFileInput" accept=".zip" style="display: none;" onchange="handleZipUpload(event)">
-      </div>
-      
-      <div class="product-form-grid">
+      <div class="form-row">
         <div class="form-group"><label><input type="checkbox" id="productActive" checked> Active</label></div>
-        <div class="form-group"><label><input type="checkbox" id="productSoldOut"> Sold Out</label></div>
-        <div class="form-group"><label><input type="checkbox" id="productFeatured"> Featured Product</label></div>
+        <div class="form-group"><label><input type="checkbox" id="productFeatured"> Featured</label></div>
         <div class="form-group"><label><input type="checkbox" id="productNew"> New Arrival</label></div>
+        <div class="form-group"><label><input type="checkbox" id="productSoldOut"> Sold Out</label></div>
       </div>
-      
-      <button type="submit" class="btn btn-primary btn-block">Save Product</button>
+      <button type="submit" class="btn btn-primary" style="width: 100%;">Save Product</button>
     </form>
+    <button class="btn btn-outline" style="margin-top: 1rem; width: 100%;" onclick="closeModal('productModal')">Cancel</button>
   </div>
 </div>
 
 <!-- Discount Modal -->
-<div class="modal-overlay" id="discountModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal('discountModal')"><i class="fas fa-times"></i></button>
+<div id="discountModal" class="modal">
+  <div class="modal-content">
     <h2>Create Discount Code</h2>
     <form id="discountForm" onsubmit="saveDiscount(event)">
-      <div class="form-group"><label>Discount Code</label><input type="text" id="discountCode" required placeholder="e.g., WELCOME20"></div>
-      <div class="form-group"><label>Discount Type</label><select id="discountType">
-        <option value="percentage">Percentage (%)</option><option value="fixed">Fixed Amount ($)</option>
-      </select></div>
-      <div class="form-group"><label>Discount Value</label><input type="number" id="discountValue" min="0" max="100" step="0.01" required></div>
-      <div class="form-group"><label>Valid Until</label><input type="date" id="discountExpiry"></div>
-      <div class="form-group"><label>Max Uses</label><input type="number" id="discountMaxUses" value="100" min="1"></div>
-      <div class="form-group"><label>Applicable Products</label><select id="discountProducts" multiple style="height: 100px;">
-        <option value="all">All Products</option>
-      </select></div>
-      <button type="submit" class="btn btn-primary btn-block">Create Discount</button>
+      <div class="form-group"><label>Discount Code *</label><input type="text" id="discountCode" required placeholder="e.g., SUMMER2024"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Type</label>
+          <select id="discountType">
+            <option value="percentage">Percentage (%)</option><option value="fixed">Fixed Amount ($)</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Value *</label><input type="number" id="discountValue" step="0.01" required></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Valid Until</label><input type="date" id="discountExpiry"></div>
+        <div class="form-group"><label>Max Uses</label><input type="number" id="discountMaxUses" value="100"></div>
+      </div>
+      <div class="form-group"><label>Apply to All Products</label><input type="checkbox" id="discountAllProducts" checked></div>
+      <button type="submit" class="btn btn-primary" style="width: 100%;">Create Discount</button>
     </form>
+    <button class="btn btn-outline" style="margin-top: 1rem; width: 100%;" onclick="closeModal('discountModal')">Cancel</button>
+  </div>
+</div>
+
+<!-- Admin Verification Overlay -->
+<div id="adminVerifyOverlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000;">
+  <div style="background: var(--bg-card); padding: 2rem; border-radius: 16px; max-width: 400px; width: 90%; text-align: center;">
+    <h2>Admin Access Required</h2>
+    <p>Enter verification code to continue</p>
+    <input type="password" id="adminCode" placeholder="Enter code" style="width: 100%; padding: 0.75rem; margin: 1rem 0; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text);">
+    <button class="btn btn-primary" onclick="verifyAdmin()">Verify Access</button>
   </div>
 </div>
 
 <script src="js/theme.js"></script>
 <script src="js/admin.js"></script>
+<script>
+  // Mobile sidebar toggle
+  const mobileToggle = document.getElementById('mobileToggle');
+  const adminSidebar = document.getElementById('adminSidebar');
+  if (mobileToggle) {
+    mobileToggle.style.display = window.innerWidth <= 768 ? 'block' : 'none';
+    mobileToggle.onclick = () => adminSidebar.classList.toggle('open');
+    window.addEventListener('resize', () => {
+      mobileToggle.style.display = window.innerWidth <= 768 ? 'block' : 'none';
+      if (window.innerWidth > 768) adminSidebar.classList.remove('open');
+    });
+  }
+</script>
 </body>
 </html>
