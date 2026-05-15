@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="heleket" content="3bebdecb" />
+  <meta name="theme-color" content="#0b0f19">
+  <title>Download — MITTELY</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Theme Switcher Button -->
+<button class="theme-switcher" id="themeSwitcher" aria-label="Toggle theme">
+  <i class="fas fa-sun"></i>
+  <i class="fas fa-moon" style="display: none;"></i>
+</button>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="download-page">
+  <div class="download-card">
+    <div class="check-icon">
+      <i class="fas fa-check"></i>
+    </div>
+    <h1>Order Confirmed</h1>
+    <p>Your asset is ready for download.</p>
+
+    <div class="file-box">
+      <div class="file-icon"><i class="fas fa-file-code"></i></div>
+      <div class="file-info">
+        <h4 id="fileName">mittely-asset.zip</h4>
+        <p>Complete source code • Ready to use</p>
+      </div>
+    </div>
+
+    <div class="progress-track">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <p class="status-text" id="statusText">Preparing download...</p>
+
+    <button class="btn btn-primary btn-block" id="dlBtn" onclick="startDownload()">
+      <i class="fas fa-download"></i> Download Now
+    </button>
+
+    <div class="download-actions">
+      <a href="dashboard.html" class="btn btn-outline btn-sm">
+        <i class="fas fa-chart-pie"></i> My Dashboard
+      </a>
+      <a href="index.html" class="btn btn-outline btn-sm">
+        <i class="fas fa-store"></i> Back to Store
+      </a>
+    </div>
+  </div>
+</div>
+
+<script src="js/theme.js"></script>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+  const orderId = params.get('order');
+
+  document.getElementById('fileName').textContent = orderId ? 'mittely-asset.zip' : 'template.zip';
+
+  async function startDownload() {
+    const btn = document.getElementById('dlBtn');
+    const bar = document.getElementById('progressBar');
+    const status = document.getElementById('statusText');
+
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner"></div> Preparing...';
+
+    let p = 0;
+    const interval = setInterval(() => {
+      p += Math.random() * 20 + 5;
+      if (p >= 100) {
+        p = 100;
+        clearInterval(interval);
+        bar.style.width = '100%';
+        status.textContent = 'Download complete!';
+        btn.innerHTML = '<i class="fas fa-check"></i> Downloaded';
+
+        if (token) {
+          window.location.href = `/.netlify/functions/download?token=${encodeURIComponent(token)}`;
+        } else {
+          generateAsset();
+        }
+      } else {
+        bar.style.width = p + '%';
+        status.textContent = `Downloading... ${Math.floor(p)}%`;
+      }
+    }, 200);
+  }
+
+  function generateAsset() {
+    const html = `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>MITTELY Asset</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"><style>:root{--p:#6366f1;--s:#ec4899;--a:#06b6d4;--d:#0b0f19;--l:#f1f5f9}*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:var(--d);color:var(--l);line-height:1.6}.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:2rem;background:radial-gradient(circle at 50% 50%,rgba(99,102,241,0.15) 0%,transparent 70%)}.hero h1{font-size:clamp(2.5rem,5vw,4rem);font-weight:900;margin-bottom:1rem;background:linear-gradient(135deg,var(--p),var(--s),var(--a));-webkit-background-clip:text;-webkit-text-fill-color:transparent}.hero p{font-size:1.2rem;opacity:0.7;max-width:600px;margin:0 auto 2rem}.btn{display:inline-block;padding:1rem 2.5rem;background:linear-gradient(135deg,var(--p),var(--s));color:white;text-decoration:none;border-radius:50px;font-weight:700;transition:transform .3s,box-shadow .3s}.btn:hover{transform:translateY(-3px);box-shadow:0 10px 40px rgba(99,102,241,0.4)}footer{text-align:center;padding:3rem 2rem;border-top:1px solid rgba(255,255,255,0.1);opacity:0.5}</style></head><body><section class="hero"><div><h1>Your Premium Asset</h1><p>Thank you for choosing MITTELY. Customize this to match your brand.</p><a href="#" class="btn">Get Started</a></div></section><footer><p> 2024 | Asset by MITTELY</p></footer></body></html>`;
+    const blob = new Blob([html], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'mittely-asset.html';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  setTimeout(startDownload, 1500);
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://your-site.netlify.app/sitemap.xml
+
+# Disallow admin and callback pages from indexing
+Disallow: /admin.html
+Disallow: /payment-callback.html
+Disallow: /download.html

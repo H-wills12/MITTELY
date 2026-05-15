@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="heleket" content="3bebdecb" />
+  <meta name="theme-color" content="#0b0f19">
+  <title>Processing Payment — MITTELY</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Theme Switcher Button -->
+<button class="theme-switcher" id="themeSwitcher" aria-label="Toggle theme">
+  <i class="fas fa-sun"></i>
+  <i class="fas fa-moon" style="display: none;"></i>
+</button>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="payment-callback-page">
+  <div class="payment-callback-card">
+    <div class="payment-status-icon" id="statusIcon">
+      <i class="fas fa-spinner fa-spin" id="statusSpinner"></i>
+      <i class="fas fa-check-circle hidden" id="statusCheck"></i>
+      <i class="fas fa-times-circle hidden" id="statusError"></i>
+    </div>
+    <h1 id="statusTitle">Verifying Payment...</h1>
+    <p id="statusDesc">Please wait while we confirm your transaction.</p>
+    <div class="progress-track">
+      <div class="progress-bar" id="progressBar" style="width: 30%;"></div>
+    </div>
+    <p class="status-detail" id="statusDetail">Contacting payment provider...</p>
+    <button class="btn btn-primary btn-block hidden" id="actionBtn" onclick="window.location.href='index.html'">
+      <i class="fas fa-home"></i> Back to Store
+    </button>
+  </div>
+</div>
+
+<script src="js/theme.js"></script>
+<script>
+  const params = new URLSearchParams(window.location.search);
+  const gateway = params.get('gateway') || 'paystack';
+  const orderId = params.get('order');
+  const reference = params.get('reference') || params.get('trxref') || orderId;
+
+  const statusTitle = document.getElementById('statusTitle');
+  const statusDesc = document.getElementById('statusDesc');
+  const statusDetail = document.getElementById('statusDetail');
+  const progressBar = document.getElementById('progressBar');
+  const statusSpinner = document.getElementById('statusSpinner');
+  const statusCheck = document.getElementById('statusCheck');
+  const statusError = document.getElementById('statusError');
+  const actionBtn = document.getElementById('actionBtn');
+
+  async function verifyPayment() {
+    try {
+      progressBar.style.width = '60%';
+      statusDetail.textContent = gateway === 'heleket' ? 'Verifying Heleket transaction...' : 'Verifying Paystack transaction...';
+
+      const verifyUrl = `/.netlify/functions/payment?action=verify&gateway=${gateway}&order=${orderId}&ref=${reference}`;
+      const res = await fetch(verifyUrl);
+      const data = await res.json();
+
+      progressBar.style.width = '100%';
+
+      if (data.verified) {
+        statusSpinner.classList.add('hidden');
+        statusCheck.classList.remove('hidden');
+        document.getElementById('statusIcon').style.borderColor = '#10b981';
+        document.getElementById('statusIcon').style.color = '#10b981';
+
+        statusTitle.textContent = 'Payment Successful!';
+        statusDesc.textContent = 'Your asset is ready for download.';
+        statusDetail.textContent = 'Redirecting to download...';
+
+        showToast('Success', 'Payment confirmed!', 'success');
+
+        const orders = JSON.parse(localStorage.getItem('mittely_orders') || '[]');
+        const newOrder = {
+          id: orderId,
+          product: data.product || { name: 'Digital Asset', category: 'General', image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f' },
+          amount: data.amount || 0,
+          gateway: gateway,
+          status: 'completed',
+          date: new Date().toISOString(),
+          downloadToken: data.download_token
+        };
+        orders.unshift(newOrder);
+        localStorage.setItem('mittely_orders', JSON.stringify(orders));
+
+        setTimeout(() => {
+          window.location.href = `download.html?token=${encodeURIComponent(data.download_token)}&order=${orderId}`;
+        }, 1500);
+      } else {
+        statusSpinner.classList.add('hidden');
+        statusError.classList.remove('hidden');
+        document.getElementById('statusIcon').style.borderColor = '#ef4444';
+        document.getElementById('statusIcon').style.color = '#ef4444';
+
+        statusTitle.textContent = 'Payment Failed';
+        statusDesc.textContent = 'We could not verify your payment.';
+        statusDetail.textContent = data.status || 'Transaction incomplete';
+
+        actionBtn.classList.remove('hidden');
+        actionBtn.innerHTML = '<i class="fas fa-redo"></i> Try Again';
+        actionBtn.onclick = () => window.location.href = 'index.html';
+
+        showToast('Error', 'Payment verification failed.', 'error');
+      }
+    } catch (err) {
+      statusSpinner.classList.add('hidden');
+      statusError.classList.remove('hidden');
+      statusTitle.textContent = 'Error';
+      statusDesc.textContent = 'Something went wrong.';
+      statusDetail.textContent = err.message;
+      actionBtn.classList.remove('hidden');
+      showToast('Error', 'Verification failed.', 'error');
+    }
+  }
+
+  function showToast(title, message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+    toast.innerHTML = `<div class="toast-icon"><i class="fas ${icons[type]}"></i></div><div><h4>${title}</h4><p>${message}</p></div>`;
+    container.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('show'));
+    setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 4000);
+  }
+
+  setTimeout(verifyPayment, 1000);
+</script>
+</body>
+</html>

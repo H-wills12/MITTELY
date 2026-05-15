@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="heleket" content="3bebdecb" />
+  <meta name="theme-color" content="#0b0f19">
+  <title>Admin Panel — MITTELY</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Theme Switcher Button -->
+<button class="theme-switcher" id="themeSwitcher" aria-label="Toggle theme">
+  <i class="fas fa-sun"></i>
+  <i class="fas fa-moon" style="display: none;"></i>
+</button>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Admin Access Verification -->
+<div class="admin-verify-overlay" id="adminVerifyOverlay">
+  <div class="admin-verify-modal">
+    <h2>Admin Access</h2>
+    <p>Enter verification code to access admin panel</p>
+    <input type="password" id="adminVerifyCode" placeholder="Enter code" class="form-input">
+    <button class="btn btn-primary" onclick="verifyAdminAccess()">Verify</button>
+  </div>
+</div>
+
+<div class="admin-layout" id="adminLayout" style="display: none;">
+  <!-- Sidebar -->
+  <aside class="admin-sidebar">
+    <a href="index.html" class="logo">MITTELY<span>.</span></a>
+    <nav>
+      <ul class="admin-nav">
+        <li><a href="#" data-tab="dashboard" class="active"><i class="fas fa-chart-line"></i> Dashboard</a></li>
+        <li><a href="#" data-tab="products"><i class="fas fa-box"></i> Products</a></li>
+        <li><a href="#" data-tab="orders"><i class="fas fa-shopping-cart"></i> Orders</a></li>
+        <li><a href="#" data-tab="customers"><i class="fas fa-users"></i> Customers</a></li>
+        <li><a href="#" data-tab="settings"><i class="fas fa-cog"></i> Settings</a></li>
+      </ul>
+    </nav>
+    <div class="admin-sidebar-footer">
+      <div class="admin-user">
+        <img id="adminAvatar" src="" alt="">
+        <div>
+          <div id="adminName"></div>
+          <div id="adminEmail"></div>
+        </div>
+      </div>
+      <button class="btn btn-outline btn-sm btn-block" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Sign Out
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="admin-main">
+    <!-- Dashboard Tab -->
+    <div id="tab-dashboard" class="admin-tab active">
+      <div class="admin-header"><h1>Dashboard</h1></div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-value" id="dashOrders">0</div><div class="stat-label">Total Orders</div></div>
+        <div class="stat-card"><div class="stat-value" id="dashRevenue">$0</div><div class="stat-label">Revenue</div></div>
+        <div class="stat-card"><div class="stat-value" id="dashCustomers">0</div><div class="stat-label">Customers</div></div>
+        <div class="stat-card"><div class="stat-value" id="dashProducts">0</div><div class="stat-label">Products</div></div>
+      </div>
+      <div class="admin-card"><div class="card-header"><h3>Recent Orders</h3></div><div class="card-body"><div id="recentOrdersTable"></div></div></div>
+    </div>
+
+    <!-- Products Tab -->
+    <div id="tab-products" class="admin-tab hidden">
+      <div class="admin-header"><h1>Products</h1><button class="btn btn-primary" onclick="openProductModal()"><i class="fas fa-plus"></i> Add Product</button></div>
+      <div class="toolbar"><div class="search-box"><i class="fas fa-search"></i><input type="text" placeholder="Search products..." id="productSearch" oninput="filterProducts()"></div></div>
+      <div id="productsTableContainer"></div>
+    </div>
+
+    <!-- Orders Tab -->
+    <div id="tab-orders" class="admin-tab hidden"><div class="admin-header"><h1>Orders</h1></div><div id="ordersTableContainer"></div></div>
+
+    <!-- Customers Tab -->
+    <div id="tab-customers" class="admin-tab hidden"><div class="admin-header"><h1>Customers</h1></div><div id="customersTableContainer"></div></div>
+
+    <!-- Settings Tab -->
+    <div id="tab-settings" class="admin-tab hidden">
+      <div class="admin-header"><h1>Settings</h1></div>
+      <div class="admin-card" style="max-width:600px;">
+        <div class="card-body">
+          <div class="form-group"><label>Site Name</label><input type="text" id="settingSiteName" value="MITTELY"></div>
+          <div class="form-group"><label>Tagline</label><input type="text" id="settingTagline" value="Building Digital Experiences That Matter"></div>
+          <div class="form-group"><label>Currency</label><select id="settingCurrency"><option value="USD">USD ($)</option><option value="EUR">EUR (€)</option><option value="GBP">GBP (£)</option></select></div>
+          
+          <div class="form-group"><label>Payment Gateway</label>
+            <div class="gateway-selector">
+              <label class="gateway-option"><input type="radio" name="gateway" value="paystack"><i class="fas fa-credit-card"></i> Paystack</label>
+              <label class="gateway-option"><input type="radio" name="gateway" value="heleket"><i class="fas fa-bolt"></i> Heleket</label>
+            </div>
+          </div>
+          
+          <div class="form-group"><label>Product Management</label>
+            <div class="product-actions">
+              <button class="btn btn-outline" onclick="setAllProductsActive(true)"><i class="fas fa-eye"></i> Set All Active</button>
+              <button class="btn btn-outline" onclick="setAllProductsActive(false)"><i class="fas fa-eye-slash"></i> Set All Inactive</button>
+            </div>
+          </div>
+          
+          <button class="btn btn-primary" onclick="saveSettings()"><i class="fas fa-save"></i> Save Settings</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Product Modal -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('productModal')"><i class="fas fa-times"></i></button>
+    <h2 id="productModalTitle">Add Product</h2>
+    <form id="productForm" onsubmit="saveProduct(event)">
+      <input type="hidden" id="productId">
+      <div class="form-group"><label>Product Name</label><input type="text" id="productName" required></div>
+      <div class="form-group"><label>Slug</label><input type="text" id="productSlug" required></div>
+      <div class="form-row"><div class="form-group"><label>Price (USD)</label><input type="number" id="productPrice" min="0" step="0.01" required></div>
+      <div class="form-group"><label>Category</label><select id="productCategory"><option value="UI Kit">UI Kit</option><option value="Template">Template</option><option value="Icon Pack">Icon Pack</option><option value="Illustration">Illustration</option></select></div></div>
+      <div class="form-group"><label>Description</label><textarea id="productDesc" rows="3" required></textarea></div>
+      <div class="form-group"><label>Image URL</label><input type="url" id="productImage" placeholder="https://images.unsplash.com/..."></div>
+      <div class="form-group"><label>Live URL</label><input type="url" id="productLiveUrl" placeholder="https://example.com/preview"></div>
+      <div class="form-group"><label><input type="checkbox" id="productActive" checked> Active</label></div>
+      <div class="form-group"><label><input type="checkbox" id="productSoldOut"> Sold Out</label></div>
+      <button type="submit" class="btn btn-primary btn-block">Save Product</button>
+    </form>
+  </div>
+</div>
+
+<script src="js/theme.js"></script>
+<script>
+  let products = [
+    { id: '1', name: 'SaaS Launch Pro', slug: 'saas-launch-pro', price: 49, category: 'Template', active: true, soldOut: false, image: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=100&h=100&fit=crop', liveUrl: 'https://example.com/saas' },
+    { id: '2', name: 'E-Commerce Elite', slug: 'ecommerce-elite', price: 79, category: 'Template', active: true, soldOut: false, image: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=100&h=100&fit=crop', liveUrl: 'https://example.com/ecommerce' },
+    { id: '3', name: 'App Landing Kit', slug: 'app-landing-kit', price: 39, category: 'UI Kit', active: true, soldOut: false, image: 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=100&h=100&fit=crop', liveUrl: 'https://example.com/app' }
+  ];
+
+  let currentUser = null;
+
+  function checkAdminAccess() {
+    const token = localStorage.getItem('mittely_token');
+    const userStr = localStorage.getItem('mittely_user');
+
+    if (!token || !userStr) {
+      window.location.href = 'login.html';
+      return false;
+    }
+
+    try {
+      currentUser = JSON.parse(userStr);
+      if (currentUser.email === 'henryagyemang906@gmail.com') {
+        document.getElementById('adminVerifyOverlay').style.display = 'flex';
+        document.getElementById('adminName').textContent = currentUser.name || 'Admin';
+        document.getElementById('adminEmail').textContent = currentUser.email;
+        if (currentUser.picture) document.getElementById('adminAvatar').src = currentUser.picture;
+        return true;
+      } else {
+        window.location.href = 'dashboard.html';
+        return false;
+      }
+    } catch (e) {
+      window.location.href = 'login.html';
+      return false;
+    }
+  }
+
+  function verifyAdminAccess() {
+    const code = document.getElementById('adminVerifyCode').value;
+    if (code === 'KINGSMAN906@ML') {
+      document.getElementById('adminVerifyOverlay').style.display = 'none';
+      document.getElementById('adminLayout').style.display = 'flex';
+      loadDashboard();
+      renderProductsTable();
+      loadOrders();
+      loadCustomers();
+    } else {
+      showToast('Access Denied', 'Invalid verification code', 'error');
+    }
+  }
+
+  function loadDashboard() {
+    const totalRevenue = products.filter(p => p.active).reduce((sum, p) => sum + p.price, 0);
+    document.getElementById('dashOrders').textContent = '127';
+    document.getElementById('dashRevenue').textContent = '$' + totalRevenue;
+    document.getElementById('dashCustomers').textContent = '89';
+    document.getElementById('dashProducts').textContent = products.length;
+    document.getElementById('recentOrdersTable').innerHTML = '<p class="empty-state">Recent orders will appear here</p>';
+  }
+
+  function renderProductsTable() {
+    const container = document.getElementById('productsTableContainer');
+    const search = document.getElementById('productSearch')?.value.toLowerCase() || '';
+    const filtered = products.filter(p => p.name.toLowerCase().includes(search));
+
+    container.innerHTML = `
+      <table class="data-table">
+        <thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Status</th><th>Live URL</th><th>Actions</th></tr></thead>
+        <tbody>${filtered.map(p => `
+          <tr>
+            <td><img src="${p.image}" style="width:40px;height:40px;object-fit:cover;border-radius:8px;"></td>
+            <td><strong>${p.name}</strong><br><small>${p.category}</small></td>
+            <td>$${p.price}</td>
+            <td>${p.soldOut ? '<span class="badge-danger">Sold Out</span>' : (p.active ? '<span class="badge-success">Active</span>' : '<span class="badge-warning">Inactive</span>')}</td>
+            <td>${p.liveUrl ? `<a href="${p.liveUrl}" target="_blank" class="btn-text">View →</a>` : '-'}</td>
+            <td>
+              <button class="btn-icon" onclick="editProduct('${p.id}')"><i class="fas fa-edit"></i></button>
+              <button class="btn-icon" onclick="toggleProductStatus('${p.id}')"><i class="fas ${p.active ? 'fa-eye-slash' : 'fa-eye'}"></i></button>
+              <button class="btn-icon" onclick="toggleSoldOut('${p.id}')"><i class="fas ${p.soldOut ? 'fa-box-open' : 'fa-tag'}"></i></button>
+              <button class="btn-icon danger" onclick="deleteProduct('${p.id}')"><i class="fas fa-trash"></i></button>
+            </td>
+          </tr>
+        `).join('')}</tbody>
+      </table>
+    `;
+  }
+
+  function openProductModal() {
+    document.getElementById('productModalTitle').textContent = 'Add Product';
+    document.getElementById('productForm').reset();
+    document.getElementById('productId').value = '';
+    document.getElementById('productModal').classList.add('active');
+  }
+
+  function editProduct(id) {
+    const p = products.find(x => x.id === id);
+    if (!p) return;
+    document.getElementById('productModalTitle').textContent = 'Edit Product';
+    document.getElementById('productId').value = p.id;
+    document.getElementById('productName').value = p.name;
+    document.getElementById('productSlug').value = p.slug;
+    document.getElementById('productPrice').value = p.price;
+    document.getElementById('productCategory').value = p.category;
+    document.getElementById('productDesc').value = p.description || '';
+    document.getElementById('productImage').value = p.image || '';
+    document.getElementById('productLiveUrl').value = p.liveUrl || '';
+    document.getElementById('productActive').checked = p.active;
+    document.getElementById('productSoldOut').checked = p.soldOut;
+    document.getElementById('productModal').classList.add('active');
+  }
+
+  function saveProduct(e) {
+    e.preventDefault();
+    const id = document.getElementById('productId').value;
+    const payload = {
+      id: id || Date.now().toString(),
+      name: document.getElementById('productName').value,
+      slug: document.getElementById('productSlug').value,
+      price: parseFloat(document.getElementById('productPrice').value),
+      category: document.getElementById('productCategory').value,
+      description: document.getElementById('productDesc').value,
+      image: document.getElementById('productImage').value,
+      liveUrl: document.getElementById('productLiveUrl').value,
+      active: document.getElementById('productActive').checked,
+      soldOut: document.getElementById('productSoldOut').checked
+    };
+    
+    if (id) {
+      const index = products.findIndex(p => p.id === id);
+      if (index !== -1) products[index] = payload;
+    } else {
+      products.push(payload);
+    }
+    
+    renderProductsTable();
+    closeModal('productModal');
+    showToast('Success', 'Product saved successfully', 'success');
+  }
+
+  function toggleProductStatus(id) {
+    const p = products.find(x => x.id === id);
+    if (p) { p.active = !p.active; renderProductsTable(); showToast('Updated', `Product ${p.active ? 'activated' : 'deactivated'}`, 'success'); }
+  }
+
+  function toggleSoldOut(id) {
+    const p = products.find(x => x.id === id);
+    if (p) { p.soldOut = !p.soldOut; renderProductsTable(); showToast('Updated', `Product marked as ${p.soldOut ? 'sold out' : 'available'}`, 'success'); }
+  }
+
+  function deleteProduct(id) {
+    if (confirm('Delete this product?')) {
+      products = products.filter(p => p.id !== id);
+      renderProductsTable();
+      showToast('Deleted', 'Product removed', 'success');
+    }
+  }
+
+  function setAllProductsActive(active) {
+    products.forEach(p => p.active = active);
+    renderProductsTable();
+    showToast('Updated', `All products ${active ? 'activated' : 'deactivated'}`, 'success');
+  }
+
+  function filterProducts() { renderProductsTable(); }
+  function loadOrders() { document.getElementById('ordersTableContainer').innerHTML = '<p class="empty-state">Order data will appear here</p>'; }
+  function loadCustomers() { document.getElementById('customersTableContainer').innerHTML = '<p class="empty-state">Customer data will appear here</p>'; }
+  function saveSettings() { showToast('Success', 'Settings saved', 'success'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+  function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+
+  function showToast(title, message, type) {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+    toast.innerHTML = `<div class="toast-icon"><i class="fas ${icons[type]}"></i></div><div><h4>${title}</h4><p>${message}</p></div>`;
+    container.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('show'));
+    setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 4000);
+  }
+
+  document.querySelectorAll('.admin-nav a').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const tab = link.getAttribute('data-tab');
+      document.querySelectorAll('.admin-tab').forEach(t => t.classList.add('hidden'));
+      document.getElementById('tab-' + tab).classList.remove('hidden');
+      document.querySelectorAll('.admin-nav a').forEach(a => a.classList.remove('active'));
+      link.classList.add('active');
+    });
+  });
+
+  checkAdminAccess();
+</script>
+</body>
+</html>

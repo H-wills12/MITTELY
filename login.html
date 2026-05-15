@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="heleket" content="3bebdecb" />
+  <meta name="theme-color" content="#0b0f19">
+  <title>Sign In — MITTELY</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+<!-- Theme Switcher Button -->
+<button class="theme-switcher" id="themeSwitcher" aria-label="Toggle theme">
+  <i class="fas fa-sun"></i>
+  <i class="fas fa-moon" style="display: none;"></i>
+</button>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="login-page">
+  <div class="login-card">
+    <a href="index.html" class="logo">MITTELY<span>.</span></a>
+    <h1>Welcome Back</h1>
+    <p>Sign in to access your assets, track transactions, and manage your account.</p>
+    
+    <div id="g_id_onload"
+      data-client_id="609303995255-2kc7pflhk32m52ipha0u7rl5ptdhatig.apps.googleusercontent.com"
+      data-context="signin"
+      data-ux_mode="popup"
+      data-callback="handleGoogleSignIn"
+      data-auto_select="false">
+    </div>
+    
+    <div class="g_id_signin"
+      data-type="standard"
+      data-shape="rectangular"
+      data-theme="outline"
+      data-text="signin_with"
+      data-size="large"
+      data-logo_alignment="left"
+      data-width="320">
+    </div>
+    
+    <p class="terms-text">
+      By signing in, you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.
+    </p>
+    
+    <a href="index.html" class="back-link">
+      <i class="fas fa-arrow-left"></i> Back to Home
+    </a>
+  </div>
+</div>
+
+<script src="js/theme.js"></script>
+<script>
+  async function handleGoogleSignIn(response) {
+    try {
+      const res = await fetch('/.netlify/functions/auth/google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ credential: response.credential })
+      });
+      const data = await res.json();
+      if (data.success) {
+        localStorage.setItem('mittely_token', data.token);
+        localStorage.setItem('mittely_user', JSON.stringify(data.user));
+        showToast('Success', 'Signed in successfully!', 'success');
+        setTimeout(() => {
+          window.location.href = data.isAdmin ? 'admin.html' : 'dashboard.html';
+        }, 800);
+      } else {
+        showToast('Error', data.error || 'Sign in failed', 'error');
+      }
+    } catch (err) {
+      showToast('Error', 'Network error. Please try again.', 'error');
+    }
+  }
+
+  function showToast(title, message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
+    toast.innerHTML = `<div class="toast-icon"><i class="fas ${icons[type]}"></i></div><div><h4>${title}</h4><p>${message}</p></div>`;
+    container.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('show'));
+    setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 4000);
+  }
+</script>
+</body>
+</html>
