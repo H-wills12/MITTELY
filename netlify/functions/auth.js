@@ -6,7 +6,7 @@ const fetch = require('node-fetch');
 const { sendEmail, welcomeTemplate } = require('./email');
 
 // Configuration
-const GOOGLE_CLIENT_ID = '609303995255-2kc7pflhk32m52ipha0u7rl5ptdhatig.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = '633950298729-3207gqqsbmhb9um1qtbpe6klmgni82jh.apps.googleusercontent.com';
 const JWT_SECRET = process.env.JWT_SECRET || 'mittely-super-secret-jwt-key-change-in-production';
 const ADMIN_EMAILS = ['henryagyemang906@gmail.com'];
 const APP_URL = process.env.APP_URL || 'https://mittely.netlify.app';
